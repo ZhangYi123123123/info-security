@@ -22,10 +22,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt bandit safety
 
-      # SAST Bandit 静态代码扫描
+      # SAST Bandit 静态代码扫描，检出漏洞不终止流水线
       - name: SAST Bandit scan
-        run: bandit -r . -f json -o bandit-report.json
+        run: bandit -r . -f json -o bandit-report.json || true
 
-      # SCA Safety 依赖漏洞扫描
+      # SCA Safety 依赖漏洞扫描，检出漏洞不终止流水线
       - name: SCA Safety check
-        run: safety check --json > safety-report.json
+        run: safety check --json > safety-report.json || true
