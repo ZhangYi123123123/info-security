@@ -1,9 +1,9 @@
 name: Lab1 Secure API CI
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   security-scan:
