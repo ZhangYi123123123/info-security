@@ -1,0 +1,31 @@
+name: Lab1 Secure API CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt bandit safety
+
+      # SAST Bandit 静态代码扫描
+      - name: SAST Bandit scan
+        run: bandit -r . -f json -o bandit-report.json
+
+      # SCA Safety 依赖漏洞扫描
+      - name: SCA Safety check
+        run: safety check --json > safety-report.json
