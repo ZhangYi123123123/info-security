@@ -2,10 +2,12 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+import os
+import secrets
 
 app = Flask(__name__)
-# 实验使用，生产环境禁止硬编码密钥
-app.config["JWT_SECRET_KEY"] = "super-secret-lab-key-123456"
+# 密钥从环境变量 JWT_SECRET_KEY 读取；未设置时生成随机密钥（重启后已签发 token 失效，仅适合实验）
+app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY") or secrets.token_hex(32)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///lab.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -61,4 +63,5 @@ def profile():
     return jsonify({"username": safe_u, "role":"user"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # debug 模式通过环境变量 FLASK_DEBUG=1 开启，默认关闭（生产环境必须关闭，避免 Werkzeug 调试器 RCE 风险）
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")
