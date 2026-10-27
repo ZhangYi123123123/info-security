@@ -32,7 +32,11 @@ jobs:
           bandit -r . -f json -o bandit-report.json || true
 
       # SCA Safety 依赖漏洞扫描：先打印漏洞，再输出json，防止检出漏洞导致job失败
+      # PYTHONWARNINGS=ignore 关闭 safety 自身依赖 authlib 的 DeprecationWarning
+      # grep -v 过滤 safety 对 check 命令的 DEPRECATED 提示（仅提示，不影响扫描结果）
       - name: SCA Safety check
+        env:
+          PYTHONWARNINGS: ignore
         run: |
-          safety check || true
-          safety check --json > safety-report.json || true
+          safety check 2>&1 | grep -v -E "DEPRECATED|We highly encourage" || true
+          safety check --json > safety-report.json 2>/dev/null || true
