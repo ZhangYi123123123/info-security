@@ -21,6 +21,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt bandit safety
+          # 修复 SCA 检出的 setuptools 漏洞 (SFTY-20260721-58460 / CVE-2026-59898, affected <83.0.0)
+          # 放在最后升级，确保扫描前环境里的 setuptools 已是安全版本
+          pip install --upgrade "setuptools>=83.0.0"
 
       # SAST Bandit 静态代码扫描：先打印漏洞，再输出json，两条命令都加||true防止失败
       - name: SAST Bandit scan
