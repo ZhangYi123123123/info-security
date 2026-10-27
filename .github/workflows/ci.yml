@@ -39,6 +39,7 @@ jobs:
           PYTHONWARNINGS: ignore
         run: |
           safety check 2>&1 \
-            | grep -v -E 'DEPRECATED|We highly encourage|AuthlibDeprecation|It will be compatible|authlib|_compat|^\+[=+]+\+|^[[:space:]]*$' \
+            | sed -E 's/\x1b\[[0-9;]*[A-Za-z]//g' \
+            | grep -v -E 'DEPRECATED|We highly encourage|AuthlibDeprecation|It will be compatible|authlib|_compat|^\+[=+]+\+$|^[[:space:]]*$' \
             || true
           safety check --json > safety-report.json 2>/dev/null || true
